@@ -61,4 +61,10 @@ public class CategoryService implements ICategoryService {
                     throw new ResourceNotFoundException("Category not found");
                 });
     }
+
+    @Override
+    public void deleteCategoryById(Long id) {
+        Category theCategory = categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+        categoryRepository.delete(theCategory);
+    }
 }

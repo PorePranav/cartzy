@@ -20,7 +20,7 @@ import static org.springframework.http.HttpStatus.*;
 public class CategoryController {
     private final ICategoryService categoryService;
 
-    @GetMapping("/all")
+    @GetMapping("/list")
     public ResponseEntity<APIResponse> getAllCategories() {
         try {
             List<Category> categoryList = categoryService.getAllCategories();
@@ -33,7 +33,7 @@ public class CategoryController {
         }
     }
 
-    @PostMapping("/add")
+    @PostMapping("/create")
     public ResponseEntity<APIResponse> addCategory(@RequestBody Category category) {
         try {
             Category theCategory = categoryService.addCategory(category);
@@ -43,7 +43,7 @@ public class CategoryController {
         }
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<APIResponse> getCategoryById(@PathVariable Long id) {
         try {
             Category theCategory = categoryService.getCategoryById(id);
@@ -53,7 +53,7 @@ public class CategoryController {
         }
     }
 
-    @GetMapping("/{name}/category")
+    @GetMapping("/name/{name}")
     public ResponseEntity<APIResponse> getCategoryByName(@PathVariable String name) {
         try {
             Category theCategory = categoryService.getCategoryByName(name);
@@ -63,7 +63,7 @@ public class CategoryController {
         }
     }
 
-    @DeleteMapping("/{id}/delete")
+    @DeleteMapping("/id/{id}")
     public ResponseEntity<APIResponse> deleteCategory(@PathVariable Long id) {
         try {
             categoryService.deleteCategoryById(id);
@@ -73,7 +73,7 @@ public class CategoryController {
         }
     }
 
-    @PutMapping("/{id}/update")
+    @PutMapping("/id/{id}")
     public ResponseEntity<APIResponse> updateCategory(@PathVariable Long id, @RequestBody Category category) {
         try {
             Category updatedCategory = categoryService.updateCategory(category, id);

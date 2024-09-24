@@ -1,13 +1,19 @@
 package com.pranavpore.cartzy.service.product;
 
+import com.pranavpore.cartzy.dto.ImageDTO;
+import com.pranavpore.cartzy.dto.ProductDTO;
 import com.pranavpore.cartzy.exceptions.ProductNotFoundException;
+import com.pranavpore.cartzy.exceptions.ResourceNotFoundException;
 import com.pranavpore.cartzy.model.Category;
+import com.pranavpore.cartzy.model.Image;
 import com.pranavpore.cartzy.model.Product;
 import com.pranavpore.cartzy.repository.CategoryRepository;
+import com.pranavpore.cartzy.repository.ImageRepository;
 import com.pranavpore.cartzy.repository.ProductRepository;
 import com.pranavpore.cartzy.request.AddProductRequest;
 import com.pranavpore.cartzy.request.UpdateProductRequest;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +24,8 @@ import java.util.Optional;
 public class ProductService implements IProductService{
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final ModelMapper modelMapper;
+    private final ImageRepository imageRepository;
 
     @Override
     public Product addProduct(AddProductRequest request) {
@@ -45,7 +53,7 @@ public class ProductService implements IProductService{
     public Product getProductById(Long id) {
         return productRepository
                 .findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
     }
 
     @Override
@@ -109,6 +117,23 @@ public class ProductService implements IProductService{
 
     @Override
     public Long countProductsByBrandAndName(String brand, String name) {
-        return productRepository.countByBrandAndName(brand, name);
+        return productRepository.countProductsByBrandAndName(brand, name);
+    }
+
+    @Override
+    public List<ProductDTO> getConvertedProducts(List<Product> products) {
+        return products.stream().map(this::convertToDTO).toList();
+    }
+
+    @Override
+    public ProductDTO convertToDTO(Product product) {
+        ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
+        List<Image> images = imageRepository.findByProductId(product.getId());
+        List<ImageDTO> imageDTOs = images
+                .stream()
+                .map(image -> modelMapper.map(image, ImageDTO.class))
+                .toList();
+        productDTO.setImages(imageDTOs);
+        return productDTO;
     }
 }

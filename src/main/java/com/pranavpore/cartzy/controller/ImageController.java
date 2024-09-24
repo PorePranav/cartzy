@@ -28,8 +28,8 @@ public class ImageController {
     private final IImageService imageService;
 
     @PostMapping("/upload")
-    public ResponseEntity<APIResponse> saveImages(@RequestParam List<MultipartFile> file,
-                                                  @RequestParam Long productId) {
+    public ResponseEntity<APIResponse> uploadImages(@RequestParam List<MultipartFile> file,
+                                                    @RequestParam Long productId) {
         try {
             List<ImageDTO> images = imageService.saveImage(file, productId);
             return ResponseEntity.ok(new APIResponse("Upload Successful", images));
@@ -40,21 +40,25 @@ public class ImageController {
         }
     }
 
-    @GetMapping("/image/download/${imageId}")
-    public ResponseEntity<Resource> downloadImage(@PathVariable  Long imageId) throws SQLException {
-        Image image = imageService.getImageById(imageId);
-        ByteArrayResource resource = new ByteArrayResource(image
-                .getImage()
-                .getBytes(1, (int) image.getImage().length()));
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.parseMediaType(image.getFileType()))
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + image.getFileName() + "\"")
-                .body(resource);
+    @GetMapping("/download/{imageId}")
+    public ResponseEntity<Resource> downloadImage(@PathVariable Long imageId) {
+        try {
+            Image image = imageService.getImageById(imageId);
+            ByteArrayResource resource = new ByteArrayResource(image
+                    .getImage()
+                    .getBytes(1, (int) image.getImage().length()));
+            return ResponseEntity
+                    .ok()
+                    .contentType(MediaType.parseMediaType(image.getFileType()))
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" + image.getFileName() + "\"")
+                    .body(resource);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    @PutMapping("/image/${imageId}/update")
+    @PutMapping("/update/{imageId}")
     public ResponseEntity<APIResponse> updateImage(@PathVariable Long imageId, @RequestBody MultipartFile file) {
         try {
             Image image = imageService.getImageById(imageId);
@@ -68,7 +72,7 @@ public class ImageController {
         return ResponseEntity.status(NOT_FOUND).body(new APIResponse("Update Failed", INTERNAL_SERVER_ERROR));
     }
 
-    @DeleteMapping("/image/${imageId}/delete")
+    @DeleteMapping("/delete/{imageId}")
     public ResponseEntity<APIResponse> deleteImage(@PathVariable Long imageId) {
         try {
             Image image = imageService.getImageById(imageId);

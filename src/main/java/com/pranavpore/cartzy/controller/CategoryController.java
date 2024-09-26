@@ -20,7 +20,7 @@ import static org.springframework.http.HttpStatus.*;
 public class CategoryController {
     private final ICategoryService categoryService;
 
-    @GetMapping("/list")
+    @GetMapping("/listCategories")
     public ResponseEntity<APIResponse> getAllCategories() {
         try {
             List<Category> categoryList = categoryService.getAllCategories();
@@ -28,12 +28,11 @@ public class CategoryController {
                     categoryList));
         } catch (Exception e) {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR)
-                    .body(new APIResponse("Internal Server Error",
-                            null));
+                    .body(new APIResponse("Internal Server Error", null));
         }
     }
 
-    @PostMapping("/create")
+    @PostMapping("/createCategory")
     public ResponseEntity<APIResponse> addCategory(@RequestBody Category category) {
         try {
             Category theCategory = categoryService.addCategory(category);
@@ -43,7 +42,7 @@ public class CategoryController {
         }
     }
 
-    @GetMapping("/id/{id}")
+    @GetMapping("/getCategoryById/{id}")
     public ResponseEntity<APIResponse> getCategoryById(@PathVariable Long id) {
         try {
             Category theCategory = categoryService.getCategoryById(id);
@@ -53,7 +52,7 @@ public class CategoryController {
         }
     }
 
-    @GetMapping("/name/{name}")
+    @GetMapping("/getCategoryByName/{name}")
     public ResponseEntity<APIResponse> getCategoryByName(@PathVariable String name) {
         try {
             Category theCategory = categoryService.getCategoryByName(name);
@@ -63,7 +62,7 @@ public class CategoryController {
         }
     }
 
-    @DeleteMapping("/id/{id}")
+    @DeleteMapping("/deleteCategoryById/{id}")
     public ResponseEntity<APIResponse> deleteCategory(@PathVariable Long id) {
         try {
             categoryService.deleteCategoryById(id);
@@ -73,7 +72,7 @@ public class CategoryController {
         }
     }
 
-    @PutMapping("/id/{id}")
+    @PutMapping("/updateCategoryById/{id}")
     public ResponseEntity<APIResponse> updateCategory(@PathVariable Long id, @RequestBody Category category) {
         try {
             Category updatedCategory = categoryService.updateCategory(category, id);

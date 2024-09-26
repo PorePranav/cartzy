@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -19,27 +20,32 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private BigDecimal totalAmount = BigDecimal.ZERO;
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<CartItem> cartItems;
 
-    public void addCartItem(CartItem cartItem) {
-        this.cartItems.add(cartItem);
-        cartItem.setCart(this);
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<CartItem> items = new HashSet<>();
+
+    public void addItem(CartItem item) {
+        this.items.add(item);
+        item.setCart(this);
         updateTotalAmount();
     }
 
     public void removeItem(CartItem cartItem) {
-        this.cartItems.remove(cartItem);
+        this.items.remove(cartItem);
         cartItem.setCart(null);
         updateTotalAmount();
     }
 
     private void updateTotalAmount() {
-        this.totalAmount = cartItems.stream().map(item -> {
+        this.totalAmount = items.stream().map(item -> {
             BigDecimal unitPrice = item.getUnitPrice();
             if (unitPrice == null)
                 return BigDecimal.ZERO;
-            return unitPrice.multiply(new BigDecimal(item.getQuantity()));
+            return unitPrice.multiply(BigDecimal.valueOf(item.getQuantity()));
         }).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

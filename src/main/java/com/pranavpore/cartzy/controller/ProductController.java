@@ -40,7 +40,7 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/{productId}")
+    @GetMapping("/getProductById/{productId}")
     public ResponseEntity<APIResponse> getProductById(@PathVariable Long productId) {
         try {
             Product product = productService.getProductById(productId);
@@ -51,7 +51,7 @@ public class ProductController {
         }
     }
 
-    @PutMapping("/{productId}")
+    @PutMapping("/updateProduct/{productId}")
     public ResponseEntity<APIResponse> updateProduct(@PathVariable Long productId,
                                                      @RequestBody UpdateProductRequest product) {
         try {
@@ -63,7 +63,7 @@ public class ProductController {
         }
     }
 
-    @DeleteMapping("/{productId}")
+    @DeleteMapping("/deleteProduct/{productId}")
     public ResponseEntity<APIResponse> deleteProduct(@PathVariable Long productId) {
         try {
             productService.deleteProductById(productId);
@@ -73,7 +73,7 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/search/by-brand-and-name")
+    @GetMapping("/search/byBrandAndName")
     public ResponseEntity<APIResponse> getProductByBrandAndName(@RequestParam String brandName,
                                                                 @RequestParam String productName) {
         try {
@@ -87,7 +87,7 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/search/by-category-and-brand")
+    @GetMapping("/search/byCategoryAndBrand")
     public ResponseEntity<APIResponse> getProductByCategoryAndBrand(@RequestParam String categoryName,
                                                                     @RequestParam String brandName) {
         try {
@@ -101,7 +101,7 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/search/by-name")
+    @GetMapping("/search/byName")
     public ResponseEntity<APIResponse> getProductByName(@RequestParam String productName) {
         try {
             List<Product> products = productService.getProductsByName(productName);
@@ -114,7 +114,7 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/search/by-brand/{brandName}")
+    @GetMapping("/search/byBrand/{brandName}")
     public ResponseEntity<APIResponse> getProductByBrand(@PathVariable String brandName) {
         try {
             List<Product> products = productService.getProductsByBrand(brandName);
@@ -127,7 +127,7 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/search/by-category/{categoryName}")
+    @GetMapping("/search/byCategory/{categoryName}")
     public ResponseEntity<APIResponse> getProductByCategory(@PathVariable String categoryName) {
         try {
             List<Product> products = productService.getProductsByCategory(categoryName);
@@ -140,7 +140,7 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/count/by-brand-and-name")
+    @GetMapping("/count/byBrandAndName")
     public ResponseEntity<APIResponse> getProductCountByBrandAndName(@RequestParam String brand,
                                                                      @RequestParam String name) {
         try {

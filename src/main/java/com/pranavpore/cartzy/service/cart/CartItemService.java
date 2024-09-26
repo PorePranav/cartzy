@@ -25,7 +25,7 @@ public class CartItemService implements ICartItemService {
         Cart cart = cartService.getCart(cartId);
         Product product = productService.getProductById(productId);
         CartItem cartItem = cart
-                .getCartItems()
+                .getItems()
                 .stream()
                 .filter(item -> item
                         .getProduct()
@@ -43,7 +43,7 @@ public class CartItemService implements ICartItemService {
         }
 
         cartItem.setTotalPrice();
-        cart.addCartItem(cartItem);
+        cart.addItem(cartItem);
         cartItemRepository.save(cartItem);
         cartRepository.save(cart);
     }
@@ -59,17 +59,23 @@ public class CartItemService implements ICartItemService {
     @Override
     public void updateItemQuantity(Long cartId, Long productId, int quantity) {
         Cart cart = cartService.getCart(cartId);
-        cart.getCartItems()
-            .stream().filter(item -> item
-                .getId()
-                .equals(productId))
-            .findFirst()
-            .ifPresent(item -> {
-                item.setQuantity(quantity);
-                item.setUnitPrice(productService.getProductById(productId).getPrice());
-                item.setTotalPrice();
-            });
-        BigDecimal totalAmount = cart.getTotalAmount();
+        cart.getItems()
+                .stream()
+                .filter(item -> item
+                        .getProduct()
+                        .getId()
+                        .equals(productId))
+                .findFirst()
+                .ifPresent(item -> {
+                    item.setQuantity(quantity);
+                    item.setUnitPrice(item.getProduct().getPrice());
+                    item.setTotalPrice();
+                });
+        BigDecimal totalAmount = cart
+                .getItems()
+                .stream()
+                .map(CartItem::getTotalPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
         cart.setTotalAmount(totalAmount);
         cartRepository.save(cart);
     }
@@ -77,7 +83,7 @@ public class CartItemService implements ICartItemService {
     @Override
     public CartItem getCartItem(Long productId, Cart cart) {
         return cart
-                .getCartItems()
+                .getItems()
                 .stream()
                 .filter(item -> item
                         .getProduct()

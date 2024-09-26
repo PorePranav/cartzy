@@ -27,7 +27,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class ImageController {
     private final IImageService imageService;
 
-    @PostMapping("/upload")
+    @PostMapping("/uploadImages")
     public ResponseEntity<APIResponse> uploadImages(@RequestParam List<MultipartFile> file,
                                                     @RequestParam Long productId) {
         try {
@@ -40,7 +40,7 @@ public class ImageController {
         }
     }
 
-    @GetMapping("/download/{imageId}")
+    @GetMapping("/downloadImage/{imageId}")
     public ResponseEntity<Resource> downloadImage(@PathVariable Long imageId) {
         try {
             Image image = imageService.getImageById(imageId);
@@ -58,7 +58,7 @@ public class ImageController {
         }
     }
 
-    @PutMapping("/update/{imageId}")
+    @PutMapping("/updateImage/{imageId}")
     public ResponseEntity<APIResponse> updateImage(@PathVariable Long imageId, @RequestBody MultipartFile file) {
         try {
             Image image = imageService.getImageById(imageId);
@@ -72,7 +72,7 @@ public class ImageController {
         return ResponseEntity.status(NOT_FOUND).body(new APIResponse("Update Failed", INTERNAL_SERVER_ERROR));
     }
 
-    @DeleteMapping("/delete/{imageId}")
+    @DeleteMapping("/deleteImage/{imageId}")
     public ResponseEntity<APIResponse> deleteImage(@PathVariable Long imageId) {
         try {
             Image image = imageService.getImageById(imageId);

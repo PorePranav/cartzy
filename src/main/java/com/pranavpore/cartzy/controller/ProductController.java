@@ -9,6 +9,7 @@ import com.pranavpore.cartzy.response.APIResponse;
 import com.pranavpore.cartzy.service.product.IProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +30,7 @@ public class ProductController {
         return ResponseEntity.ok(new APIResponse("success", productDTOS));
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/")
     public ResponseEntity<APIResponse> addProduct(@RequestBody AddProductRequest product) {
         try {
@@ -50,6 +52,7 @@ public class ProductController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/updateProduct/{productId}")
     public ResponseEntity<APIResponse> updateProduct(@PathVariable Long productId,
                                                      @RequestBody UpdateProductRequest product) {
@@ -62,6 +65,7 @@ public class ProductController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/deleteProduct/{productId}")
     public ResponseEntity<APIResponse> deleteProduct(@PathVariable Long productId) {
         try {

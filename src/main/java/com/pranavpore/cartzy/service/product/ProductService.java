@@ -2,6 +2,7 @@ package com.pranavpore.cartzy.service.product;
 
 import com.pranavpore.cartzy.dto.ImageDTO;
 import com.pranavpore.cartzy.dto.ProductDTO;
+import com.pranavpore.cartzy.exceptions.ResourceAlreadyExistsException;
 import com.pranavpore.cartzy.exceptions.ResourceNotFoundException;
 import com.pranavpore.cartzy.model.Category;
 import com.pranavpore.cartzy.model.Image;
@@ -28,6 +29,9 @@ public class ProductService implements IProductService{
 
     @Override
     public Product addProduct(AddProductRequest request) {
+        if (doesProductExist(request.getName(), request.getBrand()))
+            throw new ResourceAlreadyExistsException("Product with name " + request.getName() + " already exists");
+
         Category category = Optional.ofNullable(categoryRepository.findByName(request.getCategory().getName()))
                 .orElseGet(() -> {
                     Category newCategory = new Category(request.getCategory().getName());
@@ -35,6 +39,10 @@ public class ProductService implements IProductService{
                 });
         request.setCategory(category);
         return productRepository.save(createProduct(request, category));
+    }
+
+    private boolean doesProductExist(String name, String brand) {
+        return productRepository.existsByNameAndBrand(name, brand);
     }
 
     private Product createProduct(AddProductRequest request, Category category) {

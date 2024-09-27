@@ -14,8 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 @Controller
 @RequestMapping("${api.prefix}/products")
@@ -36,7 +35,7 @@ public class ProductController {
             Product theProduct = productService.addProduct(product);
             return ResponseEntity.ok(new APIResponse("product added successfully", theProduct));
         } catch (Exception e) {
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new APIResponse(e.getMessage(), null));
+            return ResponseEntity.status(CONFLICT).body(new APIResponse(e.getMessage(), null));
         }
     }
 

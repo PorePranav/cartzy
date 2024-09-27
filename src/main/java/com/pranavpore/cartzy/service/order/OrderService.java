@@ -1,5 +1,6 @@
 package com.pranavpore.cartzy.service.order;
 
+import com.pranavpore.cartzy.dto.OrderDTO;
 import com.pranavpore.cartzy.enums.OrderStatus;
 import com.pranavpore.cartzy.exceptions.ResourceNotFoundException;
 import com.pranavpore.cartzy.model.Cart;
@@ -10,6 +11,7 @@ import com.pranavpore.cartzy.repository.OrderRepository;
 import com.pranavpore.cartzy.repository.ProductRepository;
 import com.pranavpore.cartzy.service.cart.CartService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -23,6 +25,7 @@ public class OrderService implements IOrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final CartService cartService;
+    private final ModelMapper modelMapper;
 
     @Override
     public Order placeOrder(Long userId) {
@@ -30,6 +33,7 @@ public class OrderService implements IOrderService {
         Order order = createOrder(cart);
         List<OrderItem> orderItemList = createOrderItems(order, cart);
 
+        order.setOrderDate(LocalDate.now());
         order.setOrderItems(new HashSet<>(orderItemList));
         order.setTotalAmount(calculateTotalAmount(orderItemList));
         Order savedOrder = orderRepository.save(order);
@@ -46,12 +50,18 @@ public class OrderService implements IOrderService {
         return order;
     }
 
-
     @Override
-    public Order getOrder(Long orderId) {
+    public OrderDTO getOrder(Long orderId) {
         return orderRepository
                 .findById(orderId)
-                .orElseThrow(() -> new ResourceNotFoundException("Order with id " + orderId + " not found"));
+                .map(this::convertToDTO)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+    }
+
+    @Override
+    public List<OrderDTO> getUserOrders(Long userId) {
+        List<Order> orders = orderRepository.findByUserId(userId);
+        return orders.stream().map(this::convertToDTO).toList();
     }
 
     private List<OrderItem> createOrderItems(Order order, Cart cart) {
@@ -71,8 +81,7 @@ public class OrderService implements IOrderService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    @Override
-    public List<Order> getUserOrders(Long userId) {
-        return orderRepository.findByUserId(userId);
+    private OrderDTO convertToDTO(Order order) {
+        return modelMapper.map(order, OrderDTO.class);
     }
 }

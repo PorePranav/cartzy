@@ -2,6 +2,7 @@ package com.pranavpore.cartzy.service.cart;
 
 import com.pranavpore.cartzy.exceptions.ResourceNotFoundException;
 import com.pranavpore.cartzy.model.Cart;
+import com.pranavpore.cartzy.model.User;
 import com.pranavpore.cartzy.repository.CartItemRepository;
 import com.pranavpore.cartzy.repository.CartRepository;
 import jakarta.transaction.Transactional;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Service
@@ -34,7 +36,7 @@ public class CartService implements ICartService {
         Cart cart = getCart(id);
         cartItemRepository.deleteAllByCartId(cart.getId());
         cart.getItems().clear();
-        cartRepository.deleteById(id);
+        cart.setTotalAmount(BigDecimal.ZERO);
     }
 
     @Override
@@ -44,10 +46,13 @@ public class CartService implements ICartService {
     }
 
     @Override
-    public Long initializeNewCart() {
-        Cart newCart = new Cart();
-        cartRepository.save(newCart);
-        return newCart.getId();
+    public Cart initializeNewCart(User user) {
+        return Optional.ofNullable(getCartByUserId(user.getId()))
+                .orElseGet(() -> {
+                    Cart cart = new Cart();
+                    cart.setUser(user);
+                    return cartRepository.save(cart);
+                });
     }
 
     @Override

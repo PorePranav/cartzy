@@ -1,5 +1,6 @@
 package com.pranavpore.cartzy.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pranavpore.cartzy.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

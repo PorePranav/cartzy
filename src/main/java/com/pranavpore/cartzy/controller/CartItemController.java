@@ -1,6 +1,9 @@
 package com.pranavpore.cartzy.controller;
 
 import com.pranavpore.cartzy.exceptions.ResourceNotFoundException;
+import com.pranavpore.cartzy.model.Cart;
+import com.pranavpore.cartzy.model.User;
+import com.pranavpore.cartzy.repository.UserRepository;
 import com.pranavpore.cartzy.response.APIResponse;
 import com.pranavpore.cartzy.service.cart.ICartItemService;
 import com.pranavpore.cartzy.service.cart.ICartService;
@@ -17,15 +20,14 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class CartItemController {
     private final ICartItemService cartItemService;
     private final ICartService cartService;
+    private final UserRepository userRepository;
 
     @PostMapping("/addToCart")
-    public ResponseEntity<APIResponse> addItemToCart(@RequestParam(required = false) Long cartId,
-                                                     @RequestParam Long productId,
-                                                     @RequestParam Integer quantity) {
+    public ResponseEntity<APIResponse> addItemToCart(@RequestParam Long productId, @RequestParam Integer quantity) {
         try {
-            if (cartId == null)
-                cartId = cartService.initializeNewCart();
-            cartItemService.addItemToCart(cartId, productId, quantity);
+            User user = userRepository.getUserById(1L);
+            Cart cart = cartService.initializeNewCart(user);
+            cartItemService.addItemToCart(cart.getId(), productId, quantity);
             return ResponseEntity.ok(new APIResponse("success", null));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity

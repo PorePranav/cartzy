@@ -2,7 +2,6 @@ package com.pranavpore.cartzy.service.product;
 
 import com.pranavpore.cartzy.dto.ImageDTO;
 import com.pranavpore.cartzy.dto.ProductDTO;
-import com.pranavpore.cartzy.exceptions.ProductNotFoundException;
 import com.pranavpore.cartzy.exceptions.ResourceNotFoundException;
 import com.pranavpore.cartzy.model.Category;
 import com.pranavpore.cartzy.model.Image;
@@ -61,7 +60,7 @@ public class ProductService implements IProductService{
         productRepository
                 .findById(id)
                 .ifPresentOrElse(productRepository::delete, () -> {
-                    throw new ProductNotFoundException("Product not found");
+                    throw new ResourceNotFoundException("Product not found");
                 });
     }
 
@@ -70,7 +69,7 @@ public class ProductService implements IProductService{
         return productRepository.findById(productId)
                 .map(existingProduct -> updateExistingProduct(existingProduct, request))
                 .map(productRepository::save)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
     }
 
     private Product updateExistingProduct(Product existingProduct, UpdateProductRequest request) {
